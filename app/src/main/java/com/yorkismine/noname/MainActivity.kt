@@ -14,38 +14,25 @@ import io.reactivex.Single
 import kotlinx.android.synthetic.main.activity_main.*
 import org.reactivestreams.Subscriber
 
-class MainActivity : AppCompatActivity(), MainContract.View {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var presenter: MainContract.Presenter
     private lateinit var adapter: NotesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        presenter = MainPresenter(this)
+        val viewModel = MainViewModel()
         adapter = NotesAdapter()
+        adapter.setData(viewModel.list)
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
-        presenter.getAllNotes()
+
+
         fab.setOnClickListener {
             val note = Note(null, "this is title", "Desc!")
-            presenter.insert(note)
-
-            presenter.getAllNotes()
-
+            viewModel.insert(note)
         }
 
-
-
-    }
-
-    override fun showError() {
-        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun showResult(list: List<Note>) {
-        Log.d("TESTING", "showResult()")
-        adapter.setData(list)
     }
 }

@@ -11,7 +11,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlin.concurrent.thread
 
-class MainPresenter(private val view: MainContract.View) : MainContract.Presenter {
+class MainPresenter : MainContract.Presenter {
 
     private val dao = NotesDatabase.getInstance().noteDao()
     private val repo = NotesRepository.getInstance(dao)
@@ -22,17 +22,23 @@ class MainPresenter(private val view: MainContract.View) : MainContract.Presente
 
         Single.just(note)
             .subscribeOn(Schedulers.io())
-            .subscribe({ repo.insert(it) }, {})
+            .subscribe({ repo.insert(it) }, { })
     }
 
     @SuppressLint("CheckResult")
-    override fun getAllNotes() {
+    override fun getAllNotes(): List<Note> {
         Log.d("TESTING", "getAllNotes() -> MainPresenter")
+
+        val list: MutableList<Note> = mutableListOf()
 
         repo.getAllNotes()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ view.showResult(it) }, { view.showError() })
+            .subscribe({ list.addAll(it)  }, { })
+
+        Log.d("TESTING", "${list.size} in getAllNotes()")
+
+        return list
     }
 
 

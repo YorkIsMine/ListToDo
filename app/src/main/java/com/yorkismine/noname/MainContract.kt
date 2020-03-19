@@ -10,6 +10,6 @@ interface MainContract {
 
     interface Presenter {
         fun insert(note: Note)
-        fun getAllNotes()
+        fun getAllNotes(): List<Note>
     }
 }
